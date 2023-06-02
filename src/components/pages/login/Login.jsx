@@ -1,25 +1,51 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import imgbg from "../../../assets/others/authentication.png";
 import imglogin from "../../../assets/others/authentication2.png";
 import { useContext } from "react";
 import { AuthContext } from "../AuthProvider/Authprovider";
-import { FaBeer, FaGithub, FaGoogle } from "react-icons/fa";
+import {  FaGithub, FaGoogle } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const Login = () => {
-    const { loginUser,googleLogin} = useContext(AuthContext);
+  const { loginUser, googleLogin } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from =location.state?.from?.pathname||"/"
     
     const handleLogin = (event) => {
         event.preventDefault();
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
-        loginUser(email,password)
+        loginUser(email, password)
+            .then(result => {
+                const user = result.user;
+                Swal.fire({
+                    title: 'User login successfully',
+                    text: 'Do you want to continue',
+                    icon: 'success',
+                    confirmButtonText: 'okay'
+                })
+                navigate(from, { replace: true })
+            })
+        .catch(error=>console.log(error.message))
     }
 
     const handleGoogleLogin = () => {
         googleLogin()
-            .then(result =>{const user = result.user})
-            .catch(error=>console.log(error.message))
+            .then(result => {
+                const user = result.user;
+                Swal.fire({
+                    title: 'User login successfully',
+                    text: 'Do you want to continue',
+                    icon: 'success',
+                    confirmButtonText: 'okay'
+                })
+                navigate(from, { replace: true })
+            })
+            .catch(error => console.log(error.message))
+        
     }
 
   return (
